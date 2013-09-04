@@ -4,13 +4,11 @@ import com.mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Label;
 import com.mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_NumericStepper;
 import com.mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_PushButton;
 import com.mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Style;
-import com.mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Text;
 import com.mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Window;
 import com.mindscriptact.mvcExpressLogger.screens.MvcExpressLogScreen;
 import com.mindscriptact.mvcExpressLogger.screens.MvcExpressVisualizerScreen;
 import com.mindscriptact.mvcExpressLogger.visualizer.VisualizerManager;
 
-import flash.display.Shape;
 import flash.display.Sprite;
 import flash.display.Stage;
 import flash.events.Event;
@@ -62,7 +60,6 @@ public class MvcExpressLogger {
 	private var logText:String = "";
 	private var currentModuleName:String = "";
 	private var moduleStepper:Mvce_NumericStepper;
-	private var currentModuleText:Mvce_Text;
 	private var allModuleNames:Array;
 	private var isRenderWaiting:Boolean = false;
 	private var autoLogCheckBox:Mvce_CheckBox;
@@ -129,7 +126,7 @@ public class MvcExpressLogger {
 			} else {
 
 				var logWindow:Mvce_Window = new Mvce_Window();
-				logWindow.title = "mvcExpress logger ERROR!";
+				logWindow.titleLeft = "mvcExpress logger ERROR!";
 				logWindow.width = 200;
 				logWindow.hasCloseButton = true;
 
@@ -255,29 +252,19 @@ public class MvcExpressLogger {
 			var debugCompile:Boolean = (mvcExpressClass["DEBUG_COMPILE"] as Boolean);
 
 			var version:String = "    [" + mvcExpressClass["VERSION"] + " - " + (debugCompile ? "DEBUG COMPILE!!!" : "Release.") + "]"
-			logWindow = new Mvce_Window(null, x, y, mvcExpressClass["NAME"] + " logger" + version);
+			logWindow = new Mvce_Window(null, x, y, "...");
 			logWindow.width = width;
 			logWindow.height = height
 			logWindow.alpha = alpha;
 			logWindow.hasCloseButton = true;
 			logWindow.addEventListener(Event.CLOSE, hideLogger);
-
+			logWindow.titleRight = mvcExpressClass["NAME"] + " logger" + version;
 			//
 
-			moduleStepper = new Mvce_NumericStepper(logWindow, 120, 5, handleModuleChange);
+			moduleStepper = new Mvce_NumericStepper(logWindow, 10, 5, handleModuleChange);
 			moduleStepper.width = 32;
 			moduleStepper.minimum = 0;
 			moduleStepper.isCircular = true;
-
-			currentModuleText = new Mvce_Text(logWindow, 0, 0, "...");
-			currentModuleText.editable = false;
-			currentModuleText.width = 120;
-			currentModuleText.height = 22
-
-			var rectangle:Shape = new Shape();
-			rectangle.graphics.lineStyle(1, 0xFFFFFF);
-			rectangle.graphics.drawRect(0, 0, 120, 22);
-			logWindow.addChild(rectangle);
 
 			allButtons = new Vector.<Mvce_PushButton>();
 
@@ -314,11 +301,11 @@ public class MvcExpressLogger {
 			//
 			//if (moduleManagerClass["listMappedProcesses"] != null) {
 			//	if (moduleManagerClass["listMappedProcesses"]() != "Not supported.") {
-					var processMapingButton:Mvce_PushButton = new Mvce_PushButton(logWindow, 0, -0, ENGINE_TAB, handleButtonClick);
-					processMapingButton.toggle = true;
-					processMapingButton.width = 60;
-					processMapingButton.x = allButtons[allButtons.length - 1].x + allButtons[allButtons.length - 1].width + 5;
-					allButtons.push(processMapingButton);
+			var processMapingButton:Mvce_PushButton = new Mvce_PushButton(logWindow, 0, -0, ENGINE_TAB, handleButtonClick);
+			processMapingButton.toggle = true;
+			processMapingButton.width = 60;
+			processMapingButton.x = allButtons[allButtons.length - 1].x + allButtons[allButtons.length - 1].width + 5;
+			allButtons.push(processMapingButton);
 			//	}
 			//}
 
@@ -393,7 +380,11 @@ public class MvcExpressLogger {
 			} else {
 				currentModuleName = allModuleNames[0];
 			}
-			currentModuleText.text = currentModuleName;
+			if (currentModuleName) {
+				logWindow.titleLeft = "Module:    " + currentModuleName + getModuleExtensions(currentModuleName);
+			} else {
+				logWindow.titleLeft = "Module: mvcExpress MODULES NOT FOUND.";
+			}
 		}
 		moduleStepper.maximum = allModuleNames.length - 1;
 		currentModuleName = currentModuleName;
@@ -403,9 +394,27 @@ public class MvcExpressLogger {
 
 	private function handleModuleChange(event:Event):void {
 		currentModuleName = allModuleNames[moduleStepper.value];
-		currentModuleText.text = currentModuleName;
+		logWindow.titleLeft = "Module:    " + currentModuleName + getModuleExtensions(currentModuleName);
 		visualizerManager.manageThisScreen(currentModuleName, currentScreen as MvcExpressVisualizerScreen);
 		render();
+	}
+
+	private function getModuleExtensions(maduleName:String):String {
+		var retVal:String = "";
+		if (maduleName) {
+
+			var debugCompile:Boolean = mvcExpressClass["DEBUG_COMPILE"];
+			if (debugCompile) {
+				retVal += "    {";
+
+				use namespace pureLegsCore;
+
+				var module:Object = moduleManagerClass["getModule"](maduleName);
+				retVal += module["listExtensions"]()
+				retVal += "}";
+			}
+		}
+		return retVal;
 	}
 
 	private function handleButtonClick(event:MouseEvent = null):void {
