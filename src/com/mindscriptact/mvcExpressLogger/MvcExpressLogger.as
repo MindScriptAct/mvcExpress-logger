@@ -4,6 +4,7 @@ import com.mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Label;
 import com.mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_NumericStepper;
 import com.mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_PushButton;
 import com.mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Style;
+import com.mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Text;
 import com.mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Window;
 import com.mindscriptact.mvcExpressLogger.screens.MvcExpressLogScreen;
 import com.mindscriptact.mvcExpressLogger.screens.MvcExpressVisualizerScreen;
@@ -65,6 +66,8 @@ public class MvcExpressLogger {
 	private var autoLogCheckBox:Mvce_CheckBox;
 	private var useAutoScroll:Boolean = true;
 	private var initTab:String;
+
+	private var errorText:Mvce_Text;
 
 	static private var stage:Stage;
 
@@ -169,6 +172,18 @@ public class MvcExpressLogger {
 	private function debugMvcExpress(traceObj:Object):void {
 		//
 		visualizerManager.logMvcExpress(traceObj);
+		//
+		if (traceObj.action == "ERROR!") {
+			//logWindow
+			if (!errorText) {
+				errorText = new Mvce_Text();
+				logWindow.addChild(errorText);
+				errorText.width = width;
+				errorText.height = height;
+				errorText.editable = false;
+			}
+			errorText.text += "\n" + traceObj.errorMessage;
+		}
 		//
 		if (traceObj.canPrint) {
 
@@ -468,6 +483,10 @@ public class MvcExpressLogger {
 			}
 		} else {
 			currentTogleButton.selected = true;
+		}
+		if (errorText) {
+			logWindow.removeChild(errorText);
+			logWindow.addChild(errorText);
 		}
 	}
 
