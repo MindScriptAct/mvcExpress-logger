@@ -22,7 +22,7 @@ import mvcexpress.core.namespace.pureLegsCore;
 
 /**
  * COMMENT
- * @author Raimundas Banevicius (http://www.mindscriptact.com/)
+ * @author Raimundas Banevicius (http://mvcexpress.org/)
  */
 public class MvcExpressLogger {
 
@@ -33,6 +33,7 @@ public class MvcExpressLogger {
 	static public const COMMANDS_TAB:String = "COMMANDS";
 	static public const VISUALIZER_TAB:String = "VISUALIZER";
 	static public const ENGINE_TAB:String = "ENGINE";
+	static public const CUSTOM_LOGGING_TAB:String = "custom logging";
 	//
 	static private var allowInstantiation:Boolean;
 	static private var instance:MvcExpressLogger;
@@ -73,6 +74,10 @@ public class MvcExpressLogger {
 
 	static private var mvcExpressClass:Class;
 	static private var moduleManagerClass:Class;
+
+	private static var _isCustomLoggingEnabled:Boolean;
+
+	internal var customLogText:String = "";
 
 	public function MvcExpressLogger() {
 		if (!allowInstantiation) {
@@ -336,7 +341,7 @@ public class MvcExpressLogger {
 			var visualizerButton:Mvce_PushButton = new Mvce_PushButton(logWindow, 0, -0, VISUALIZER_TAB, handleButtonClick);
 			visualizerButton.toggle = true;
 			visualizerButton.width = 60;
-			visualizerButton.x = 600;
+			visualizerButton.x = 555;
 			allButtons.push(visualizerButton);
 
 			if (!debugCompile) {
@@ -369,6 +374,7 @@ public class MvcExpressLogger {
 	private function handleClearLog(event:MouseEvent):void {
 		//trace("MvcExpressLogger.handleClearLog > event : " + event);
 		logText = "";
+		customLogText = "";
 		render();
 	}
 
@@ -418,15 +424,18 @@ public class MvcExpressLogger {
 		var retVal:String = "";
 		if (maduleName) {
 
-			var debugCompile:Boolean = mvcExpressClass["DEBUG_COMPILE"];
-			if (debugCompile) {
-				retVal += "    {";
+			CONFIG::debug {
 
-				use namespace pureLegsCore;
+				var debugCompile:Boolean = mvcExpressClass["DEBUG_COMPILE"];
+				if (debugCompile) {
+					retVal += "    {";
 
-				var module:Object = moduleManagerClass["getModule"](maduleName);
-				retVal += module["listExtensions"]()
-				retVal += "}";
+					use namespace pureLegsCore;
+
+					var module:Object = moduleManagerClass["getModule"](maduleName);
+					retVal += module["listExtensions"]()
+					retVal += "}";
+				}
 			}
 		}
 		return retVal;
@@ -461,7 +470,7 @@ public class MvcExpressLogger {
 				currentScreen = null;
 			}
 			currentTabButtonName = targetButton.label;
-			autoLogCheckBox.visible = (currentTabButtonName == LOG_TAB)
+			autoLogCheckBox.visible = (currentTabButtonName == LOG_TAB) || (currentTabButtonName == CUSTOM_LOGGING_TAB);
 
 			switch (currentTabButtonName) {
 				case VISUALIZER_TAB:
@@ -514,14 +523,20 @@ public class MvcExpressLogger {
 				(currentScreen as MvcExpressLogScreen).scrollDown(false);
 				break;
 			case ENGINE_TAB:
-				var result:String = moduleManagerClass["invokeModuleFunction"](currentModuleName, "listMappedProcesses") as String;
+				try {
+					var result:String = moduleManagerClass["invokeModuleFunction"](currentModuleName, "listMappedProcesses") as String;
+				} catch (error:Error) {
+					result = "This module does not support Processes. Please use mvcExpress live DLC class: ModuleLive for this feature."
+				}
 				if (result.substr(0, 72) == "Failed to invoke blankModule module function, named: listMappedProcesses") {
-					result = "This module does not support Processes. Please use mvcExpress live DLC class: ModuleCoreLive for this feature."
+					result = "This module does not support Processes. Please use mvcExpress live DLC class: ModuleLive for this feature."
 				}
 				(currentScreen as MvcExpressLogScreen).showLog(result);
 				(currentScreen as MvcExpressLogScreen).scrollDown(false);
 				break;
-			case VISUALIZER_TAB:
+			case CUSTOM_LOGGING_TAB:
+				(currentScreen as MvcExpressLogScreen).showLog(customLogText);
+				(currentScreen as MvcExpressLogScreen).scrollDown(useAutoScroll);
 				break;
 			default:
 		}
@@ -532,5 +547,50 @@ public class MvcExpressLogger {
 		MvcExpressLogger.stage.removeChild(logWindow);
 	}
 
+	//------------------------------
+	//  custom logging
+	//------------------------------
+
+	public static function get isCustomLoggingEnabled():Boolean {
+		return _isCustomLoggingEnabled;
+	}
+
+	public static function set isCustomLoggingEnabled(value:Boolean):void {
+		_isCustomLoggingEnabled = value;
+		if (!_isCustomLoggingEnabled) {
+			instance.customLogText = "";
+		}
+		if (instance != null) {
+			instance.renderCustomLoggingButton();
+		}
+	}
+
+	public static function log(debugText:String):void {
+		if (instance.customLogText != "") {
+			instance.customLogText += "\n";
+		}
+		instance.customLogText += debugText;
+		if (instance.currentTabButtonName == CUSTOM_LOGGING_TAB) {
+			instance.render();
+		}
+	}
+
+	private var customLoggingButton:Mvce_PushButton;
+
+	public function renderCustomLoggingButton():void {
+		if (_isCustomLoggingEnabled) {
+			if (!customLoggingButton) {
+				customLoggingButton = new Mvce_PushButton(logWindow, 0, 0, CUSTOM_LOGGING_TAB, handleButtonClick);
+				customLoggingButton.toggle = true;
+				//customLoggingButton.width = 60;
+				customLoggingButton.x = 650;
+			}
+		} else {
+			if (customLoggingButton) {
+				logWindow.removeChild(customLoggingButton);
+				customLoggingButton = null;
+			}
+		}
+	}
 }
 }

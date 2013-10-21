@@ -13,7 +13,7 @@ import mvcexpress.core.namespace.pureLegsCore;
 
 /**
  * COMMENT
- * @author Raimundas Banevicius (http://www.mindscriptact.com/)
+ * @author Raimundas Banevicius (http://mvcexpress.org/)
  */
 public class VisualizerManager {
 
