@@ -11,6 +11,7 @@ import com.mindscriptact.mvcExpressLogger.screens.MvcExpressVisualizerScreen;
 import com.mindscriptact.mvcExpressLogger.visualizer.VisualizerManager;
 
 import flash.display.Sprite;
+
 import flash.display.Stage;
 import flash.events.Event;
 import flash.events.KeyboardEvent;
@@ -141,7 +142,7 @@ public class MvcExpressLogger {
 				var erorLabel:Mvce_Label = new Mvce_Label();
 				erorLabel.x = 10;
 				erorLabel.y = 10;
-				erorLabel.text = "mvcExpress classes not found.\n\nMake sure mvcExpress framework\n  files are added.";
+				erorLabel.text = "mvcExpress classes not found.\n\nStart using mvcExpress framework!\n        Have fun!.";
 				logWindow.addChild(erorLabel);
 
 				logWindow.addEventListener(Event.CLOSE, hideErrorWindow);
@@ -526,10 +527,10 @@ public class MvcExpressLogger {
 				try {
 					var result:String = moduleManagerClass["invokeModuleFunction"](currentModuleName, "listMappedProcesses") as String;
 				} catch (error:Error) {
-					result = "This module does not support Processes. Please use mvcExpress live DLC class: ModuleLive for this feature."
+					result = "This module does not support Processes. Please use mvcExpress live extension class: ModuleLive for this feature."
 				}
 				if (result.substr(0, 72) == "Failed to invoke blankModule module function, named: listMappedProcesses") {
-					result = "This module does not support Processes. Please use mvcExpress live DLC class: ModuleLive for this feature."
+					result = "This module does not support Processes. Please use mvcExpress live extension class: ModuleLive for this feature."
 				}
 				(currentScreen as MvcExpressLogScreen).showLog(result);
 				(currentScreen as MvcExpressLogScreen).scrollDown(false);
