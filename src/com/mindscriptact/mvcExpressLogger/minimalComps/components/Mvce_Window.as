@@ -33,19 +33,14 @@ import flash.display.Shape;
 import flash.display.Sprite;
 import flash.events.Event;
 import flash.events.MouseEvent;
-import flash.text.TextFieldAutoSize;
 
 [Event(name="select", type="flash.events.Event")]
 [Event(name="close", type="flash.events.Event")]
 [Event(name="resize", type="flash.events.Event")]
 public class Mvce_Window extends Mvce_Component {
-
-	protected var _titleLeft:String;
-	protected var _titleRight:String;
-
+	protected var _title:String;
 	protected var _titleBar:Mvce_Panel;
-	protected var _titleLeftLabel:Mvce_Label;
-	protected var _titleRightLabel:Mvce_Label;
+	protected var _titleLabel:Mvce_Label;
 	protected var _panel:Mvce_Panel;
 	protected var _color:int = -1;
 	protected var _shadow:Boolean = true;
@@ -65,9 +60,8 @@ public class Mvce_Window extends Mvce_Component {
 	 * @param ypos The y position to place this component.
 	 * @param title The string to display in the title bar.
 	 */
-	public function Mvce_Window(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number = 0, titleLeft:String = "Window", titleRight:String = null) {
-		_titleLeft = titleLeft;
-		_titleRight = titleRight;
+	public function Mvce_Window(parent:DisplayObjectContainer = null, xpos:Number = 0, ypos:Number = 0, title:String = "Window") {
+		_title = title;
 		super(parent, xpos, ypos);
 	}
 
@@ -90,12 +84,7 @@ public class Mvce_Window extends Mvce_Component {
 		_titleBar.addEventListener(MouseEvent.MOUSE_DOWN, onMouseGoDown);
 		_titleBar.height = 20;
 		super.addChild(_titleBar);
-
-		_titleLeftLabel = new Mvce_Label(_titleBar.content, 5, 1, _titleLeft);
-		_titleLeftLabel.textFieldAutoSize = TextFieldAutoSize.LEFT;
-
-		_titleRightLabel = new Mvce_Label(_titleBar.content, 5, 1, _titleRight);
-		_titleRightLabel.textFieldAutoSize = TextFieldAutoSize.NONE;
+		_titleLabel = new Mvce_Label(_titleBar.content, 5, 1, _title);
 
 		_grips = new Shape();
 		for (var i:int = 0; i < 4; i++) {
@@ -133,8 +122,6 @@ public class Mvce_Window extends Mvce_Component {
 		_closeButton.setSize(8, 8);
 
 		filters = [getShadow(4, false)];
-
-
 	}
 
 
@@ -175,16 +162,9 @@ public class Mvce_Window extends Mvce_Component {
 		_panel.color = _color;
 		_titleBar.width = width;
 		_titleBar.draw();
-
-		_titleLeftLabel.x = _hasMinimizeButton ? 20 : 5;
-
-		_titleRightLabel.textField.autoSize = TextFieldAutoSize.NONE;
-		_titleRightLabel.x = _hasMinimizeButton ? 20 : 5;
-		_titleRightLabel.textField.width = _width - 28;
-		_titleRightLabel.textField.autoSize = TextFieldAutoSize.RIGHT;
-
+		_titleLabel.x = _hasMinimizeButton ? 20 : 5;
 		_closeButton.x = _width - 14;
-		_grips.x = _titleLeftLabel.x + _titleLeftLabel.width;
+		_grips.x = _titleLabel.x + _titleLabel.width;
 		if (_hasCloseButton) {
 			_grips.width = _closeButton.x - _grips.x - 2;
 		}
@@ -266,23 +246,15 @@ public class Mvce_Window extends Mvce_Component {
 	/**
 	 * Gets / sets the title shown in the title bar.
 	 */
-	public function set titleLeft(t:String):void {
-		_titleLeft = t;
-		_titleLeftLabel.text = _titleLeft;
+	public function set title(t:String):void {
+		_title = t;
+		_titleLabel.text = _title;
 	}
 
-	public function get titleLeft():String {
-		return _titleLeft;
+	public function get title():String {
+		return _title;
 	}
 
-	public function set titleRight(t:String):void {
-		_titleRight = t;
-		_titleRightLabel.text = _titleRight;
-	}
-
-	public function get titleRight():String {
-		return _titleRight;
-	}
 	/**
 	 * Container for content added to this panel. This is just a reference to the content of the internal Panel, which is masked, so best to add children to content, rather than directly to the window.
 	 */

@@ -5,7 +5,7 @@ import flash.display.Sprite;
 
 /**
  * COMMENT
- * @author Raimundas Banevicius (http://mvcexpress.org/)
+ * @author Raimundas Banevicius (http://www.mindscriptact.com/)
  */
 public class MvcExpressLogScreen extends Sprite {
 	private var screenWidth:int;

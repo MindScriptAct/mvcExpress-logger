@@ -39,8 +39,6 @@ public class Mvce_Label extends Mvce_Component {
 	protected var _text:String = "";
 	protected var _tf:TextField;
 
-	public var textFieldAutoSize:String = TextFieldAutoSize.LEFT;
-
 	/**
 	 * Constructor
 	 * @param parent The parent DisplayObjectContainer on which to add this Label.
@@ -90,7 +88,7 @@ public class Mvce_Label extends Mvce_Component {
 		super.draw();
 		_tf.text = _text;
 		if (_autoSize) {
-			_tf.autoSize = textFieldAutoSize;
+			_tf.autoSize = TextFieldAutoSize.LEFT;
 			_width = _tf.width;
 			dispatchEvent(new Event(Event.RESIZE));
 		}

@@ -6,14 +6,18 @@ import flash.utils.getDefinitionByName;
 
 import mvcexpress.core.namespace.pureLegsCore;
 
-//import mvcexpress.unpureCore.traceObjects.MvcTraceActions;
+    import org.mvcexpress.mvc.Command;
+    import org.mvcexpress.mvc.Mediator;
+    import org.mvcexpress.mvc.Proxy;
+
+//import mvcexpress.core.traceObjects.MvcTraceActions;
 //import mvcexpress.mvc.Command;
 //import mvcexpress.mvc.Mediator;
 //import mvcexpress.mvc.Proxy;
 
 /**
  * COMMENT
- * @author Raimundas Banevicius (http://mvcexpress.org/)
+ * @author Raimundas Banevicius (http://www.mindscriptact.com/)
  */
 public class VisualizerManager {
 
@@ -32,28 +36,28 @@ public class VisualizerManager {
 	public function VisualizerManager() {
 		if (!VisualizerManager.commandClass) {
 			try {
-				VisualizerManager.commandClass = getDefinitionByName("mvcexpress.mvc::Command") as Class;
+				VisualizerManager.commandClass = Command as Class;
 			} catch (error:Error) {
 				VisualizerManager.commandClass = null;
 			}
 		}
 		if (!VisualizerManager.mediatorClass) {
 			try {
-				VisualizerManager.mediatorClass = getDefinitionByName("mvcexpress.mvc::Mediator") as Class;
+				VisualizerManager.mediatorClass = Mediator as Class;
 			} catch (error:Error) {
 				VisualizerManager.mediatorClass = null;
 			}
 		}
 		if (!VisualizerManager.proxyClass) {
 			try {
-				VisualizerManager.proxyClass = getDefinitionByName("mvcexpress.mvc::Proxy") as Class;
+				VisualizerManager.proxyClass = Proxy as Class;
 			} catch (error:Error) {
 				VisualizerManager.proxyClass = null;
 			}
 		}
 		if (!VisualizerManager.processClass) {
 			try {
-				VisualizerManager.processClass = getDefinitionByName("mvcexpress.extensions.live.engine::Process") as Class;
+				VisualizerManager.processClass = getDefinitionByName("org.mvcexpress.dlc.live::Process") as Class;
 			} catch (error:Error) {
 				VisualizerManager.processClass = null;
 			}
