@@ -11,11 +11,11 @@ import com.mindscriptact.mvcExpressLogger.screens.MvcExpressVisualizerScreen;
 import com.mindscriptact.mvcExpressLogger.visualizer.VisualizerManager;
 
 import flash.display.Sprite;
-
 import flash.display.Stage;
 import flash.events.Event;
 import flash.events.KeyboardEvent;
 import flash.events.MouseEvent;
+import flash.utils.Dictionary;
 import flash.utils.getDefinitionByName;
 import flash.utils.setTimeout;
 
@@ -79,6 +79,8 @@ public class MvcExpressLogger {
 	private static var _isCustomLoggingEnabled:Boolean;
 
 	internal var customLogText:String = "";
+
+	static private var classesToIgnore:Dictionary = new Dictionary();
 
 	public function MvcExpressLogger() {
 		if (!allowInstantiation) {
@@ -169,7 +171,7 @@ public class MvcExpressLogger {
 
 	static public function hide():void {
 		if (instance) {
-			instance.showLogger();
+			instance.hideLogger();
 		} else {
 			trace("WARNING: MvcExpressLogger must be MvcExpressLogger.init(); before you can use this function.");
 		}
@@ -193,8 +195,19 @@ public class MvcExpressLogger {
 		//
 		if (traceObj.canPrint) {
 
-			logText += traceObj + "\n";
-			//
+			var mvcClass:Class;
+			if (traceObj.hasOwnProperty("commandClass")) {
+				mvcClass = traceObj.commandClass;
+			} else if (traceObj.hasOwnProperty("mediatorClass")) {
+				mvcClass = traceObj.mediatorClass;
+			} else if (traceObj.hasOwnProperty("proxyClass")) {
+				mvcClass = traceObj.proxyClass;
+			}
+
+			if (mvcClass == null || classesToIgnore[mvcClass] != true) {
+				logText += traceObj + "\n";
+			}
+
 			if (isLogShown) {
 
 				var logType:String = String(traceObj).substr(0, 2);
@@ -593,5 +606,18 @@ public class MvcExpressLogger {
 			}
 		}
 	}
+
+	public static function ignoreClasses(...classes:Array):void {
+		for (var i:int = 0; i < classes.length; i++) {
+			classesToIgnore[classes[i]] = true;
+		}
+	}
+
+	public static function unignoreClasses(...classes:Array):void {
+		for (var i:int = 0; i < classes.length; i++) {
+			delete classesToIgnore[classes[i]];
+		}
+	}
+
 }
 }
