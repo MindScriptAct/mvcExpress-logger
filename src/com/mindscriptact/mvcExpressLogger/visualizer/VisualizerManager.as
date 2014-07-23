@@ -5,6 +5,7 @@ import flash.utils.Dictionary;
 import flash.utils.getDefinitionByName;
 
 import mvcexpress.core.namespace.pureLegsCore;
+import mvcexpress.core.traceObjects.command.TraceCommand_sendMessage;
 
 //import mvcexpress.unpureCore.traceObjects.MvcTraceActions;
 //import mvcexpress.mvc.Command;
@@ -391,5 +392,23 @@ public class VisualizerManager {
 		return moduleProxies[moduleName];
 	}
 
+	public function getTopObjectClass():Class {
+		var retVal:Class;
+		if (sendMessageStack.length) {
+			var topObject:Object = sendMessageStack[sendMessageStack.length - 1];
+			if (topObject is TraceCommand_sendMessage) {
+				if (topObject.commandObject != null) {
+					retVal = topObject.commandObject.constructor;
+				} else if (topObject.mediatorObject != null) {
+					retVal = topObject.mediatorObject.constructor;
+				} else if (topObject.proxyObject != null) {
+					retVal = topObject.proxyObject.constructor;
+				} else if (topObject.moduleObject != null) {
+					retVal = topObject.moduleObject.constructor;
+				}
+			}
+		}
+		return retVal;
+	}
 }
 }

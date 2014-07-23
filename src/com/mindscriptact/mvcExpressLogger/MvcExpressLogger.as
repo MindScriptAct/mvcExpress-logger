@@ -101,7 +101,7 @@ public class MvcExpressLogger {
 			}
 
 			Mvce_Style.setStyle(Mvce_Style.DARK);
-			Mvce_Style.LABEL_TEXT = 0xFFFFFF
+			Mvce_Style.LABEL_TEXT = 0xFFFFFF;
 
 			if (mvcExpressClass && moduleManagerClass) {
 				if (!instance) {
@@ -196,12 +196,16 @@ public class MvcExpressLogger {
 		if (traceObj.canPrint) {
 
 			var mvcClass:Class;
-			if (traceObj.hasOwnProperty("commandClass")) {
-				mvcClass = traceObj.commandClass;
-			} else if (traceObj.hasOwnProperty("mediatorClass")) {
-				mvcClass = traceObj.mediatorClass;
-			} else if (traceObj.hasOwnProperty("proxyClass")) {
-				mvcClass = traceObj.proxyClass;
+			if(traceObj.action == "Messenger.send"){
+				mvcClass = visualizerManager.getTopObjectClass();
+			} else {
+				if (traceObj.hasOwnProperty("commandClass")) {
+					mvcClass = traceObj.commandClass;
+				} else if (traceObj.hasOwnProperty("mediatorClass")) {
+					mvcClass = traceObj.mediatorClass;
+				} else if (traceObj.hasOwnProperty("proxyClass")) {
+					mvcClass = traceObj.proxyClass;
+				}
 			}
 
 			if (mvcClass == null || classesToIgnore[mvcClass] != true) {
@@ -285,10 +289,10 @@ public class MvcExpressLogger {
 
 			var debugCompile:Boolean = (mvcExpressClass["DEBUG_COMPILE"] as Boolean);
 
-			var version:String = "    [" + mvcExpressClass["VERSION"] + " - " + (debugCompile ? "DEBUG COMPILE!!!" : "Release.") + "]"
+			var version:String = "    [" + mvcExpressClass["VERSION"] + " - " + (debugCompile ? "DEBUG COMPILE!!!" : "Release.") + "]";
 			logWindow = new Mvce_Window(null, x, y, "...");
 			logWindow.width = width;
-			logWindow.height = height
+			logWindow.height = height;
 			logWindow.alpha = alpha;
 			logWindow.hasCloseButton = true;
 			logWindow.addEventListener(Event.CLOSE, hideLogger);
@@ -434,9 +438,9 @@ public class MvcExpressLogger {
 		render();
 	}
 
-	private function getModuleExtensions(maduleName:String):String {
+	private function getModuleExtensions(moduleName:String):String {
 		var retVal:String = "";
-		if (maduleName) {
+		if (moduleName) {
 
 			CONFIG::debug {
 
@@ -446,8 +450,8 @@ public class MvcExpressLogger {
 
 					use namespace pureLegsCore;
 
-					var module:Object = moduleManagerClass["getModule"](maduleName);
-					retVal += module["listExtensions"]()
+					var module:Object = moduleManagerClass["getModule"](moduleName);
+					retVal += module["listExtensions"]();
 					retVal += "}";
 				}
 			}
