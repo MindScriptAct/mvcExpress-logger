@@ -81,6 +81,7 @@ public class MvcExpressLogger {
 	internal var customLogText:String = "";
 
 	static private var classesToIgnore:Dictionary = new Dictionary();
+	static private var messageTypesToIgnore:Dictionary = new Dictionary();
 
 	public function MvcExpressLogger() {
 		if (!allowInstantiation) {
@@ -195,9 +196,15 @@ public class MvcExpressLogger {
 		//
 		if (traceObj.canPrint) {
 
+			var doLogTrace:Boolean = true;
+
 			var mvcClass:Class;
 			if(traceObj.action == "Messenger.send"){
-				mvcClass = visualizerManager.getTopObjectClass();
+				if(messageTypesToIgnore[traceObj.type] != null){
+					doLogTrace = false;
+				} else {
+					mvcClass = visualizerManager.getTopObjectClass();
+				}
 			} else {
 				if (traceObj.hasOwnProperty("commandClass")) {
 					mvcClass = traceObj.commandClass;
@@ -208,7 +215,11 @@ public class MvcExpressLogger {
 				}
 			}
 
-			if (mvcClass == null || classesToIgnore[mvcClass] != true) {
+			if(mvcClass != null && classesToIgnore[mvcClass] == true){
+				doLogTrace = false;
+			}
+
+			if (doLogTrace) {
 				logText += traceObj + "\n";
 			}
 
@@ -639,5 +650,32 @@ public class MvcExpressLogger {
 		}
 	}
 
+	public static function ignoreMessages(ignoreMessageType : String, ...moreIgnoreMessageTypes:Array) : void {
+		CONFIG::debug {
+			for(var i:int = 0; i < moreIgnoreMessageTypes.length; i++) {
+				if(!(moreIgnoreMessageTypes[i] is String)){
+					throw Error("You can only ignore Strings as message types, but you provided:"+moreIgnoreMessageTypes[i]);
+				}
+			}
+		}
+		moreIgnoreMessageTypes.unshift(ignoreMessageType);
+		for (var i:int = 0; i < moreIgnoreMessageTypes.length; i++) {
+			messageTypesToIgnore[moreIgnoreMessageTypes[i]] = true;
+		}
+	}
+
+	public static function unignoreMessages(ignoreMessageType : String, ...moreIgnoreMessageTypes:Array) : void {
+		CONFIG::debug {
+			for(var i:int = 0; i < moreIgnoreMessageTypes.length; i++) {
+				if(!(moreIgnoreMessageTypes[i] is String)){
+					throw Error("You can only ignore Strings as message types, but you provided:"+moreIgnoreMessageTypes[i]);
+				}
+			}
+		}
+		moreIgnoreMessageTypes.unshift(ignoreMessageType);
+		for (var i:int = 0; i < moreIgnoreMessageTypes.length; i++) {
+			delete messageTypesToIgnore[moreIgnoreMessageTypes[i]];
+		}
+	}
 }
 }
