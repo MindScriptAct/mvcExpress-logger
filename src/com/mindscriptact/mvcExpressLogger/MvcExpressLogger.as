@@ -611,15 +611,31 @@ public class MvcExpressLogger {
 		}
 	}
 
-	public static function ignoreClasses(...classes:Array):void {
-		for (var i:int = 0; i < classes.length; i++) {
-			classesToIgnore[classes[i]] = true;
+	public static function ignoreClasses(ignoreClass:Class, ...moreIgnoreClasses:Array):void {
+		CONFIG::debug {
+			for(var i:int = 0; i < moreIgnoreClasses.length; i++) {
+			    if(!(moreIgnoreClasses[i] is Class)){
+			        throw Error("You can only ignore classes, but you provided:"+moreIgnoreClasses[i]);
+			    }
+			}
+		}
+		moreIgnoreClasses.unshift(ignoreClass);
+		for (var i:int = 0; i < moreIgnoreClasses.length; i++) {
+			classesToIgnore[moreIgnoreClasses[i]] = true;
 		}
 	}
 
-	public static function unignoreClasses(...classes:Array):void {
-		for (var i:int = 0; i < classes.length; i++) {
-			delete classesToIgnore[classes[i]];
+	public static function unignoreClasses(ignoreClass:Class, ...moreIgnoreClasses:Array):void {
+		CONFIG::debug {
+			for(var i:int = 0; i < moreIgnoreClasses.length; i++) {
+				if(!(moreIgnoreClasses[i] is Class)){
+					throw Error("You can only ignore classes, but you provided:"+moreIgnoreClasses[i]);
+				}
+			}
+		}
+		moreIgnoreClasses.unshift(ignoreClass);
+		for (var i:int = 0; i < moreIgnoreClasses.length; i++) {
+			delete classesToIgnore[moreIgnoreClasses[i]];
 		}
 	}
 
