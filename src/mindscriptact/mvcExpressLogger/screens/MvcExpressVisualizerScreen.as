@@ -1,5 +1,5 @@
-package com.mindscriptact.mvcExpressLogger.screens {
-import com.mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Label;
+package mindscriptact.mvcExpressLogger.screens {
+import mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Label;
 
 import flash.display.Shape;
 import flash.display.Sprite;

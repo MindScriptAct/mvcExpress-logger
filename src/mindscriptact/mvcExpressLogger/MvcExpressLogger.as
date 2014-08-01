@@ -1,14 +1,14 @@
-package com.mindscriptact.mvcExpressLogger {
-import com.mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_CheckBox;
-import com.mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Label;
-import com.mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_NumericStepper;
-import com.mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_PushButton;
-import com.mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Style;
-import com.mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Text;
-import com.mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Window;
-import com.mindscriptact.mvcExpressLogger.screens.MvcExpressLogScreen;
-import com.mindscriptact.mvcExpressLogger.screens.MvcExpressVisualizerScreen;
-import com.mindscriptact.mvcExpressLogger.visualizer.VisualizerManager;
+package mindscriptact.mvcExpressLogger {
+import mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_CheckBox;
+import mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Label;
+import mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_NumericStepper;
+import mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_PushButton;
+import mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Style;
+import mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Text;
+import mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Window;
+import mindscriptact.mvcExpressLogger.screens.MvcExpressLogScreen;
+import mindscriptact.mvcExpressLogger.screens.MvcExpressVisualizerScreen;
+import mindscriptact.mvcExpressLogger.visualizer.VisualizerManager;
 
 import flash.display.Sprite;
 import flash.display.Stage;

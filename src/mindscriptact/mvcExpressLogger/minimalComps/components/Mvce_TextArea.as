@@ -26,7 +26,7 @@
  * THE SOFTWARE.
  */
 
-package com.mindscriptact.mvcExpressLogger.minimalComps.components {
+package mindscriptact.mvcExpressLogger.minimalComps.components {
 import flash.display.DisplayObjectContainer;
 import flash.events.Event;
 import flash.events.MouseEvent;

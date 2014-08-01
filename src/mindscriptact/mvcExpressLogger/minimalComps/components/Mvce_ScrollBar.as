@@ -26,7 +26,7 @@
  * THE SOFTWARE.
  */
 
-package com.mindscriptact.mvcExpressLogger.minimalComps.components {
+package mindscriptact.mvcExpressLogger.minimalComps.components {
 import flash.display.DisplayObjectContainer;
 import flash.display.Shape;
 import flash.events.Event;
@@ -318,8 +318,8 @@ public class Mvce_ScrollBar extends Mvce_Component {
 }
 
 
-import com.mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Slider;
-import com.mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Style;
+import mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Slider;
+import mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Style;
 
 import flash.display.DisplayObjectContainer;
 import flash.events.Event;

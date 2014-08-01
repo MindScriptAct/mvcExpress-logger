@@ -1,5 +1,5 @@
-package com.mindscriptact.mvcExpressLogger.visualizer {
-import com.mindscriptact.mvcExpressLogger.screens.MvcExpressVisualizerScreen;
+package mindscriptact.mvcExpressLogger.visualizer {
+import mindscriptact.mvcExpressLogger.screens.MvcExpressVisualizerScreen;
 
 import flash.utils.Dictionary;
 import flash.utils.getDefinitionByName;

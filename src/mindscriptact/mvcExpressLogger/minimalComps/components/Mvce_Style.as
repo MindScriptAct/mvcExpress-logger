@@ -27,7 +27,7 @@
  * THE SOFTWARE.
  */
 
-package com.mindscriptact.mvcExpressLogger.minimalComps.components {
+package mindscriptact.mvcExpressLogger.minimalComps.components {
 
 public class Mvce_Style {
 	public static var TEXT_BACKGROUND:uint = 0xFFFFFF;
