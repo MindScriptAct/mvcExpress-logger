@@ -53,7 +53,8 @@ public class MvcExpressLogger {
 	private var isAltKeyNeeded:Boolean;
 	//
 	// view
-	private var logWindow:Mvce_Window;
+	static private var logWindow:Mvce_Window = new Mvce_Window();
+	private var isInitialized:Boolean = false;
 	private var isLogShown:Boolean = false;
 	private var allButtons:Vector.<Mvce_PushButton>;
 	private var currentScreen:Sprite;
@@ -137,7 +138,6 @@ public class MvcExpressLogger {
 				}
 			} else {
 
-				var logWindow:Mvce_Window = new Mvce_Window();
 				logWindow.titleLeft = "mvcExpress logger ERROR!";
 				logWindow.width = 200;
 				logWindow.hasCloseButton = true;
@@ -296,12 +296,14 @@ public class MvcExpressLogger {
 
 	private function showLogger():void {
 		isLogShown = true;
-		if (!logWindow) {
+		if (!isInitialized) {
+			isInitialized = true;
 
 			var debugCompile:Boolean = (mvcExpressClass["DEBUG_COMPILE"] as Boolean);
 
 			var version:String = "    [" + mvcExpressClass["VERSION"] + " - " + (debugCompile ? "DEBUG COMPILE!!!" : "Release.") + "]";
-			logWindow = new Mvce_Window(null, x, y, "...");
+			logWindow.x = x;
+			logWindow.y = y;
 			logWindow.width = width;
 			logWindow.height = height;
 			logWindow.alpha = alpha;
@@ -631,7 +633,7 @@ public class MvcExpressLogger {
 			}
 		}
 		moreIgnoreClasses.unshift(ignoreClass);
-		for (var i:int = 0; i < moreIgnoreClasses.length; i++) {
+		for (i = 0; i < moreIgnoreClasses.length; i++) {
 			classesToIgnore[moreIgnoreClasses[i]] = true;
 		}
 	}
@@ -645,7 +647,7 @@ public class MvcExpressLogger {
 			}
 		}
 		moreIgnoreClasses.unshift(ignoreClass);
-		for (var i:int = 0; i < moreIgnoreClasses.length; i++) {
+		for (i = 0; i < moreIgnoreClasses.length; i++) {
 			delete classesToIgnore[moreIgnoreClasses[i]];
 		}
 	}
@@ -659,7 +661,7 @@ public class MvcExpressLogger {
 			}
 		}
 		moreIgnoreMessageTypes.unshift(ignoreMessageType);
-		for (var i:int = 0; i < moreIgnoreMessageTypes.length; i++) {
+		for (i = 0; i < moreIgnoreMessageTypes.length; i++) {
 			messageTypesToIgnore[moreIgnoreMessageTypes[i]] = true;
 		}
 	}
@@ -673,7 +675,7 @@ public class MvcExpressLogger {
 			}
 		}
 		moreIgnoreMessageTypes.unshift(ignoreMessageType);
-		for (var i:int = 0; i < moreIgnoreMessageTypes.length; i++) {
+		for (i = 0; i < moreIgnoreMessageTypes.length; i++) {
 			delete messageTypesToIgnore[moreIgnoreMessageTypes[i]];
 		}
 	}
