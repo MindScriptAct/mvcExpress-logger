@@ -330,6 +330,7 @@ public class MvcExpressLogger {
 			logWindow.addEventListener(Event.CLOSE, hideLogger);
 			logWindow.titleRight = mvcExpressClass["NAME"] + " logger" + version;
 			//
+			logWindow.refreshFonts();
 
 			moduleStepper = new Mvce_NumericStepper(logWindow, 10, 5, handleModuleChange);
 			moduleStepper.width = 32;
