@@ -34,6 +34,7 @@ import flash.display.Sprite;
 import flash.events.Event;
 import flash.events.MouseEvent;
 import flash.text.TextFieldAutoSize;
+import flash.text.TextFormat;
 
 [Event(name="select", type="flash.events.Event")]
 [Event(name="close", type="flash.events.Event")]
@@ -82,7 +83,8 @@ public class Mvce_Window extends Mvce_Component {
 	/**
 	 * Creates and adds the child display objects of this component.
 	 */
-	override protected function addChildren():void {
+	override protected function addChildren():void 
+	{
 		_titleBar = new Mvce_Panel();
 		_titleBar.filters = [];
 		_titleBar.buttonMode = true;
@@ -193,6 +195,16 @@ public class Mvce_Window extends Mvce_Component {
 		}
 		_panel.setSize(_width, _height - 20);
 		_panel.draw();
+	}
+	
+	public function refreshFonts():void
+	{
+		var textFormat:TextFormat = new TextFormat(Mvce_Style.fontName, Mvce_Style.fontSize, Mvce_Style.LABEL_TEXT);
+		
+		_titleLeftLabel.textField.defaultTextFormat = textFormat;
+		_titleRightLabel.textField.defaultTextFormat = textFormat;
+		
+		draw();
 	}
 
 
