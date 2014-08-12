@@ -42,8 +42,7 @@ public class MvcExpressLogger {
 
 	// view params
 
-	private var x:int;
-	private var y:int;
+	// FIXME : Remove, Move to view manager
 	private var width:int;
 	private var height:int;
 	private var alpha:Number;
@@ -51,9 +50,15 @@ public class MvcExpressLogger {
 	private var isCtrlKeyNeeded:Boolean;
 	private var isShiftKeyNeeded:Boolean;
 	private var isAltKeyNeeded:Boolean;
-	//
-	// view
-	static private var logWindow:Mvce_Window = new Mvce_Window();
+
+	// Core elements.
+	static private const logViewManager:LoggerViewManager = new LoggerViewManager();
+	static private const logWindow:Mvce_Window = logViewManager.pureLegsCore::getLoggerView();
+	static private const logParser:LoggerTraceParser = new LoggerTraceParser(logWindow);
+
+
+	// FIXME: LATER - deprecated. MvcExpressLogger should not be used an object, and should not contain non static variables.
+
 	private var isInitialized:Boolean = false;
 	private var isLogShown:Boolean = false;
 	private var allButtons:Vector.<Mvce_PushButton>;
@@ -84,16 +89,18 @@ public class MvcExpressLogger {
 	static private var classesToIgnore:Dictionary = new Dictionary();
 	static private var messageTypesToIgnore:Dictionary = new Dictionary();
 
+	// FIXME: LATER - deprecated. MvcExpressLogger should not be used an object.
 	public function MvcExpressLogger() {
 		if (!allowInstantiation) {
 			throw Error("MvcExpressLogger is singleton and will be instantiated with first use or MvcExpressLogger.init()");
 		}
 	}
 
-	static public function init(stage:Stage, x:int = 0, y:int = 0, width:int = 900, height:int = 400, alpha:Number = 0.9, autoShow:Boolean = false, initTab:String = "LOG", openKeyCode:int = 192, isCtrlKeyNeeded:Boolean = true, isShiftKeyNeeded:Boolean = false, isAltKeyNeeded:Boolean = false):void {
+	static public function init(stage:Stage, x:int = 0, y:int = 0, width:int = 900, height:int = 400, alpha:Number = 0.9, autoShow:Boolean = false, initTab:String = "LOG", openKeyCode:int = 192, isCtrlKeyNeeded:Boolean = true, isShiftKeyNeeded:Boolean = false, isAltKeyNeeded:Boolean = false):LoggerViewManager {
 
 		if (stage) {
 
+			// FIXME: move stage to view manager.
 			MvcExpressLogger.stage = stage;
 
 			try {
@@ -102,12 +109,15 @@ public class MvcExpressLogger {
 			} catch (error:Error) {
 			}
 
+			// FIXME: move out.
 			Mvce_Style.setStyle(Mvce_Style.DARK);
 			Mvce_Style.LABEL_TEXT = 0xFFFFFF;
 
 			if (mvcExpressClass && moduleManagerClass) {
+				// FIXME: move to view manager.
 				if (!instance) {
 					allowInstantiation = true;
+					// FIXME: LATER - deprecated. MvcExpressLogger should not be used an object. Its only static API.
 					instance = new MvcExpressLogger();
 					allowInstantiation = false;
 					//
@@ -115,8 +125,9 @@ public class MvcExpressLogger {
 					//
 					MvcExpressLogger.stage.root.addEventListener(KeyboardEvent.KEY_DOWN, instance.handleKeyPress);
 
-					instance.x = x;
-					instance.y = y;
+					logViewManager.moveTo(x, y);
+
+					// FIXME : replace with view manager functions.
 					instance.width = width;
 					instance.height = height;
 					instance.alpha = alpha;
@@ -128,15 +139,16 @@ public class MvcExpressLogger {
 
 				}
 
+				// FIXME: get parse function from logger parser.
 				use namespace pureLegsCore;
-
-				//use namespace pureLegsCoreNameSpace;
 				mvcExpressClass["loggerFunction"] = instance.debugMvcExpress;
 
 				if (autoShow) {
 					instance.showLogger();
 				}
 			} else {
+
+				// FIXME: move showing error window to view manager.
 
 				logWindow.titleLeft = "mvcExpress logger ERROR!";
 				logWindow.width = 200;
@@ -156,13 +168,18 @@ public class MvcExpressLogger {
 		} else {
 			throw Error("Stage must be provided for mvcExpress logger to work properly.");
 		}
+
+		// for function chaining.
+		return logViewManager;
 	}
 
+	// FIXME: move to view manager.
 	static private function hideErrorWindow(event:Event):void {
 		MvcExpressLogger.stage.removeChild(event.target as Mvce_Window);
 	}
 
 	static public function show():void {
+		// FIXME: use view manager.
 		if (instance) {
 			instance.showLogger();
 		} else {
@@ -171,6 +188,7 @@ public class MvcExpressLogger {
 	}
 
 	static public function hide():void {
+		// FIXME: use view manager.
 		if (instance) {
 			instance.hideLogger();
 		} else {
@@ -178,6 +196,7 @@ public class MvcExpressLogger {
 		}
 	}
 
+	// FIXME: move to logger parser.
 	private function debugMvcExpress(traceObj:Object):void {
 		//
 		visualizerManager.logMvcExpress(traceObj);
@@ -283,6 +302,7 @@ public class MvcExpressLogger {
 		}
 	}
 
+	// FIXME: move to view controller
 	private function handleKeyPress(event:KeyboardEvent):void {
 		//trace("MvcExpressLogger.handleKeyPress > event : " + event);
 		if (event.keyCode == openKeyCode && event.ctrlKey == isCtrlKeyNeeded && event.shiftKey == isShiftKeyNeeded && event.altKey == isAltKeyNeeded) {
@@ -294,6 +314,7 @@ public class MvcExpressLogger {
 		}
 	}
 
+	// FIXME: move to view controller
 	private function showLogger():void {
 		isLogShown = true;
 		if (!isInitialized) {
@@ -302,8 +323,6 @@ public class MvcExpressLogger {
 			var debugCompile:Boolean = (mvcExpressClass["DEBUG_COMPILE"] as Boolean);
 
 			var version:String = "    [" + mvcExpressClass["VERSION"] + " - " + (debugCompile ? "DEBUG COMPILE!!!" : "Release.") + "]";
-			logWindow.x = x;
-			logWindow.y = y;
 			logWindow.width = width;
 			logWindow.height = height;
 			logWindow.alpha = alpha;
@@ -366,7 +385,7 @@ public class MvcExpressLogger {
 			clearButton.width = 50;
 			clearButton.height = 15;
 
-			autoLogCheckBox = new Mvce_CheckBox(logWindow, 0, 5, "autoScroll", handleAutoScrollTogle);
+			autoLogCheckBox = new Mvce_CheckBox(logWindow, 0, 5, "autoScroll", handleAutoScrollToggle);
 			autoLogCheckBox.x = allButtons[allButtons.length - 1].x + allButtons[allButtons.length - 1].width + 70;
 			autoLogCheckBox.selected = true;
 
@@ -391,6 +410,7 @@ public class MvcExpressLogger {
 		delayedAutoButtonClick()
 	}
 
+	// FIXME: move to view controller
 	private function delayedAutoButtonClick():void {
 		if (!currentTabButtonName) {
 			resolveCurrentModuleName();
@@ -403,6 +423,7 @@ public class MvcExpressLogger {
 
 	}
 
+	// FIXME: move to view controller
 	private function handleClearLog(event:MouseEvent):void {
 		//trace("MvcExpressLogger.handleClearLog > event : " + event);
 		logText = "";
@@ -410,12 +431,14 @@ public class MvcExpressLogger {
 		render();
 	}
 
-	private function handleAutoScrollTogle(event:MouseEvent):void {
+	// FIXME: move to view controller
+	private function handleAutoScrollToggle(event:MouseEvent):void {
 		//trace("MvcExpressLogger.handleAutoScrollTogle > event : " + event);
 		useAutoScroll = (event.target as Mvce_CheckBox).selected;
 		(currentScreen as MvcExpressLogScreen).scrollDown(useAutoScroll);
 	}
 
+	// FIXME: move to view controller
 	private function resolveCurrentModuleName():void {
 		var moduleNameList:String = moduleManagerClass["listModules"]();
 		var namesOnly:Array = moduleNameList.split(":");
@@ -445,6 +468,7 @@ public class MvcExpressLogger {
 		render();
 	}
 
+	// FIXME: move to view controller
 	private function handleModuleChange(event:Event):void {
 		currentModuleName = allModuleNames[moduleStepper.value];
 		logWindow.titleLeft = "Module:    " + currentModuleName + getModuleExtensions(currentModuleName);
@@ -452,6 +476,7 @@ public class MvcExpressLogger {
 		render();
 	}
 
+	// FIXME: move to view controller
 	private function getModuleExtensions(moduleName:String):String {
 		var retVal:String = "";
 		if (moduleName) {
@@ -473,6 +498,7 @@ public class MvcExpressLogger {
 		return retVal;
 	}
 
+	// FIXME: move to view controller
 	private function handleButtonClick(event:MouseEvent = null):void {
 		if (event) {
 			var targetButton:Mvce_PushButton = (event.target as Mvce_PushButton);
@@ -531,6 +557,7 @@ public class MvcExpressLogger {
 		}
 	}
 
+	// FIXME: move to view controller
 	private function render():void {
 		isRenderWaiting = false;
 		switch (currentTabButtonName) {
@@ -574,6 +601,7 @@ public class MvcExpressLogger {
 		}
 	}
 
+	// FIXME: move to view controller
 	private function hideLogger(event:Event = null):void {
 		isLogShown = false;
 		MvcExpressLogger.stage.removeChild(logWindow);
@@ -598,6 +626,7 @@ public class MvcExpressLogger {
 	}
 
 	public static function log(debugText:String):void {
+		// FIXME: move to view controller
 		if (instance.customLogText != "") {
 			instance.customLogText += "\n";
 		}
@@ -609,6 +638,7 @@ public class MvcExpressLogger {
 
 	private var customLoggingButton:Mvce_PushButton;
 
+	// FIXME: move to view controller
 	public function renderCustomLoggingButton():void {
 		if (_isCustomLoggingEnabled) {
 			if (!customLoggingButton) {
@@ -624,6 +654,10 @@ public class MvcExpressLogger {
 			}
 		}
 	}
+
+	//////////////////////////////
+	//   Ignore stuff from logging.
+	//////////////////////////////
 
 	public static function ignoreClasses(ignoreClass:Class, ...moreIgnoreClasses:Array):void {
 		CONFIG::debug {
@@ -679,6 +713,39 @@ public class MvcExpressLogger {
 		for (i = 0; i < moreIgnoreMessageTypes.length; i++) {
 			delete messageTypesToIgnore[moreIgnoreMessageTypes[i]];
 		}
+	}
+
+	///////////////////
+	//  User API.
+	///////////////////
+
+	public static function moveTo(x:int, y:int):LoggerViewManager {
+		return logViewManager.moveTo(x, y);
+	}
+
+	public static function resize(width:int, height:int):LoggerViewManager {
+		// FIXME : Implement.
+		return null;
+	}
+
+	public static function setAlpha(alpha:Number):LoggerViewManager {
+		// FIXME : Implement.
+		return null;
+	}
+
+	public static function autoShow(doAutoShow:Boolean = true):LoggerViewManager {
+		// FIXME : Implement.
+		return null;
+	}
+
+	public static function showTab(tabName:String):LoggerViewManager {
+		// FIXME : Implement.
+		return null;
+	}
+
+	public static function setToggleKey(openKeyCode:int = 192, isCtrlKeyNeeded:Boolean = true, isShiftKeyNeeded:Boolean = false, isAltKeyNeeded:Boolean = false):LoggerViewManager {
+		// FIXME : Implement.
+		return null;
 	}
 }
 }
