@@ -23,5 +23,18 @@ public class LoggerViewManager {
 		logWindow.y = y;
 		return this;
 	}
+
+	public function resizeTo(width:int, height:int):LoggerViewManager {
+		logWindow.width = width;
+		logWindow.height = height;
+		return this;
+	}
+
+	public function setAlpha(alpha:Number):LoggerViewManager {
+		logWindow.alpha = alpha;
+		return this;
+
+	}
+
 }
 }

@@ -1,12 +1,10 @@
 package mindscriptact.mvcExpressLogger {
-import mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Window;
-
 public class LoggerTraceParser {
 
-	private var logWindow:Mvce_Window;
+	private var logWiewManager:LoggerViewManager;
 
-	public function LoggerTraceParser(logWindow:Mvce_Window) {
-		this.logWindow = logWindow;
+	public function LoggerTraceParser(logWiewManager:LoggerViewManager) {
+		this.logWiewManager = logWiewManager;
 	}
 
 }

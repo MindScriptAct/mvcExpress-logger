@@ -1,4 +1,13 @@
 package mindscriptact.mvcExpressLogger {
+import flash.display.Sprite;
+import flash.display.Stage;
+import flash.events.Event;
+import flash.events.KeyboardEvent;
+import flash.events.MouseEvent;
+import flash.utils.Dictionary;
+import flash.utils.getDefinitionByName;
+import flash.utils.setTimeout;
+
 import mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_CheckBox;
 import mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Label;
 import mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_NumericStepper;
@@ -9,15 +18,6 @@ import mindscriptact.mvcExpressLogger.minimalComps.components.Mvce_Window;
 import mindscriptact.mvcExpressLogger.screens.MvcExpressLogScreen;
 import mindscriptact.mvcExpressLogger.screens.MvcExpressVisualizerScreen;
 import mindscriptact.mvcExpressLogger.visualizer.VisualizerManager;
-
-import flash.display.Sprite;
-import flash.display.Stage;
-import flash.events.Event;
-import flash.events.KeyboardEvent;
-import flash.events.MouseEvent;
-import flash.utils.Dictionary;
-import flash.utils.getDefinitionByName;
-import flash.utils.setTimeout;
 
 import mvcexpress.core.namespace.pureLegsCore;
 
@@ -40,21 +40,22 @@ public class MvcExpressLogger {
 	static private var instance:MvcExpressLogger;
 	static private var visualizerManager:VisualizerManager;
 
+
+	// Core elements.
+	static private const logViewManager:LoggerViewManager = new LoggerViewManager();
+
+	static private const logWindow:Mvce_Window = logViewManager.pureLegsCore::getLoggerView();
+
+	static private const logParser:LoggerTraceParser = new LoggerTraceParser(logViewManager);
+
+
 	// view params
 
 	// FIXME : Remove, Move to view manager
-	private var width:int;
-	private var height:int;
-	private var alpha:Number;
 	private var openKeyCode:int;
 	private var isCtrlKeyNeeded:Boolean;
 	private var isShiftKeyNeeded:Boolean;
 	private var isAltKeyNeeded:Boolean;
-
-	// Core elements.
-	static private const logViewManager:LoggerViewManager = new LoggerViewManager();
-	static private const logWindow:Mvce_Window = logViewManager.pureLegsCore::getLoggerView();
-	static private const logParser:LoggerTraceParser = new LoggerTraceParser(logWindow);
 
 
 	// FIXME: LATER - deprecated. MvcExpressLogger should not be used an object, and should not contain non static variables.
@@ -114,6 +115,7 @@ public class MvcExpressLogger {
 			Mvce_Style.LABEL_TEXT = 0xFFFFFF;
 
 			if (mvcExpressClass && moduleManagerClass) {
+
 				// FIXME: move to view manager.
 				if (!instance) {
 					allowInstantiation = true;
@@ -126,13 +128,14 @@ public class MvcExpressLogger {
 					MvcExpressLogger.stage.root.addEventListener(KeyboardEvent.KEY_DOWN, instance.handleKeyPress);
 
 					logViewManager.moveTo(x, y);
+					logViewManager.resizeTo(width, height);
+					logViewManager.setAlpha(alpha);
 
-					// FIXME : replace with view manager functions.
-					instance.width = width;
-					instance.height = height;
-					instance.alpha = alpha;
 					instance.initTab = initTab;
+
+
 					instance.openKeyCode = openKeyCode;
+
 					instance.isCtrlKeyNeeded = isCtrlKeyNeeded;
 					instance.isShiftKeyNeeded = isShiftKeyNeeded;
 					instance.isAltKeyNeeded = isAltKeyNeeded;
@@ -141,6 +144,7 @@ public class MvcExpressLogger {
 
 				// FIXME: get parse function from logger parser.
 				use namespace pureLegsCore;
+
 				mvcExpressClass["loggerFunction"] = instance.debugMvcExpress;
 
 				if (autoShow) {
@@ -206,8 +210,8 @@ public class MvcExpressLogger {
 			if (!errorText) {
 				errorText = new Mvce_Text();
 				logWindow.addChild(errorText);
-				errorText.width = width;
-				errorText.height = height;
+				errorText.width = logWindow.width;
+				errorText.height = logWindow.height;
 				errorText.editable = false;
 			}
 			errorText.text += "\n" + traceObj.errorMessage;
@@ -218,8 +222,8 @@ public class MvcExpressLogger {
 			var doLogTrace:Boolean = true;
 
 			var mvcClass:Class;
-			if(traceObj.action == "Messenger.send"){
-				if(messageTypesToIgnore[traceObj.type] != null){
+			if (traceObj.action == "Messenger.send") {
+				if (messageTypesToIgnore[traceObj.type] != null) {
 					doLogTrace = false;
 				} else {
 					mvcClass = visualizerManager.getTopObjectClass();
@@ -234,7 +238,7 @@ public class MvcExpressLogger {
 				}
 			}
 
-			if(mvcClass != null && classesToIgnore[mvcClass] == true){
+			if (mvcClass != null && classesToIgnore[mvcClass] == true) {
 				doLogTrace = false;
 			}
 
@@ -323,9 +327,9 @@ public class MvcExpressLogger {
 			var debugCompile:Boolean = (mvcExpressClass["DEBUG_COMPILE"] as Boolean);
 
 			var version:String = "    [" + mvcExpressClass["VERSION"] + " - " + (debugCompile ? "DEBUG COMPILE!!!" : "Release.") + "]";
-			logWindow.width = width;
-			logWindow.height = height;
-			logWindow.alpha = alpha;
+			logWindow.width = logWindow.width;
+			logWindow.height = logWindow.height;
+			logWindow.alpha = logWindow.alpha;
 			logWindow.hasCloseButton = true;
 			logWindow.addEventListener(Event.CLOSE, hideLogger);
 			logWindow.titleRight = mvcExpressClass["NAME"] + " logger" + version;
@@ -532,13 +536,13 @@ public class MvcExpressLogger {
 
 			switch (currentTabButtonName) {
 				case VISUALIZER_TAB:
-					currentScreen = new MvcExpressVisualizerScreen(width - 6, height - 52);
+					currentScreen = new MvcExpressVisualizerScreen(logWindow.width - 6, logWindow.height - 52);
 					currentScreen.x = 3;
 					currentScreen.y = 25;
 					visualizerManager.manageThisScreen(currentModuleName, currentScreen as MvcExpressVisualizerScreen);
 					break;
 				default:
-					currentScreen = new MvcExpressLogScreen(width - 6, height - 52);
+					currentScreen = new MvcExpressLogScreen(logWindow.width - 6, logWindow.height - 52);
 					currentScreen.x = 3;
 					currentScreen.y = 25;
 					visualizerManager.manageNothing();
@@ -661,10 +665,10 @@ public class MvcExpressLogger {
 
 	public static function ignoreClasses(ignoreClass:Class, ...moreIgnoreClasses:Array):void {
 		CONFIG::debug {
-			for(var i:int = 0; i < moreIgnoreClasses.length; i++) {
-			    if(!(moreIgnoreClasses[i] is Class)){
-			        throw Error("You can only ignore classes, but you provided:"+moreIgnoreClasses[i]);
-			    }
+			for (var i:int = 0; i < moreIgnoreClasses.length; i++) {
+				if (!(moreIgnoreClasses[i] is Class)) {
+					throw Error("You can only ignore classes, but you provided:" + moreIgnoreClasses[i]);
+				}
 			}
 		}
 		moreIgnoreClasses.unshift(ignoreClass);
@@ -675,9 +679,9 @@ public class MvcExpressLogger {
 
 	public static function unignoreClasses(ignoreClass:Class, ...moreIgnoreClasses:Array):void {
 		CONFIG::debug {
-			for(var i:int = 0; i < moreIgnoreClasses.length; i++) {
-				if(!(moreIgnoreClasses[i] is Class)){
-					throw Error("You can only ignore classes, but you provided:"+moreIgnoreClasses[i]);
+			for (var i:int = 0; i < moreIgnoreClasses.length; i++) {
+				if (!(moreIgnoreClasses[i] is Class)) {
+					throw Error("You can only ignore classes, but you provided:" + moreIgnoreClasses[i]);
 				}
 			}
 		}
@@ -687,11 +691,11 @@ public class MvcExpressLogger {
 		}
 	}
 
-	public static function ignoreMessages(ignoreMessageType : String, ...moreIgnoreMessageTypes:Array) : void {
+	public static function ignoreMessages(ignoreMessageType:String, ...moreIgnoreMessageTypes:Array):void {
 		CONFIG::debug {
-			for(var i:int = 0; i < moreIgnoreMessageTypes.length; i++) {
-				if(!(moreIgnoreMessageTypes[i] is String)){
-					throw Error("You can only ignore Strings as message types, but you provided:"+moreIgnoreMessageTypes[i]);
+			for (var i:int = 0; i < moreIgnoreMessageTypes.length; i++) {
+				if (!(moreIgnoreMessageTypes[i] is String)) {
+					throw Error("You can only ignore Strings as message types, but you provided:" + moreIgnoreMessageTypes[i]);
 				}
 			}
 		}
@@ -701,11 +705,11 @@ public class MvcExpressLogger {
 		}
 	}
 
-	public static function unignoreMessages(ignoreMessageType : String, ...moreIgnoreMessageTypes:Array) : void {
+	public static function unignoreMessages(ignoreMessageType:String, ...moreIgnoreMessageTypes:Array):void {
 		CONFIG::debug {
-			for(var i:int = 0; i < moreIgnoreMessageTypes.length; i++) {
-				if(!(moreIgnoreMessageTypes[i] is String)){
-					throw Error("You can only ignore Strings as message types, but you provided:"+moreIgnoreMessageTypes[i]);
+			for (var i:int = 0; i < moreIgnoreMessageTypes.length; i++) {
+				if (!(moreIgnoreMessageTypes[i] is String)) {
+					throw Error("You can only ignore Strings as message types, but you provided:" + moreIgnoreMessageTypes[i]);
 				}
 			}
 		}
