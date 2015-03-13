@@ -101,6 +101,7 @@ public class Mvce_Component extends Sprite {
 	/**
 	 * Marks the component to be redrawn on the next frame.
 	 */
+	// TODO: investigate draw...
 	protected function invalidate():void {
 //			draw();
 		addEventListener(Event.ENTER_FRAME, onInvalidate);
